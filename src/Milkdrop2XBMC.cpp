@@ -1,11 +1,10 @@
 #include <windows.h>
 #include <io.h>
 #include <vector>
-#include "../../vis_milk2/vis_milk2/plugin.h"
-
+#include "vis_milk2/plugin.h"
 
 #define TARGET_WINDOWS
-#include "addons/include/xbmc_vis_dll.h"
+#include "xbmc/xbmc_vis_dll.h"
 
 CPlugin g_plugin;
 bool IsInitialized = false;
