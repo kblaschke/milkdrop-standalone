@@ -19,7 +19,7 @@ set(DEPLIBS vis_milk2 ${DIRECTX_D3DX9_LIBRARY})
 
 build_addon(visualization.milkdrop2 MD2 DEPLIBS)
 
-add_executable(StandAlone src/StandAlone.cpp EXCLUDE_FROM_ALL)
-target_link_libraries(StandAlone ${DEPLIBS})
+add_executable(Milkdrop2StandAlone EXCLUDE_FROM_ALL src/StandAlone.cpp)
+target_link_libraries(Milkdrop2StandAlone ${DEPLIBS})
 
 include(CPack)
