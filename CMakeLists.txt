@@ -8,14 +8,14 @@ find_package(kodi REQUIRED)
 find_package(DirectX REQUIRED)
 
 include_directories(${PROJECT_SOURCE_DIR}/lib/vis_milk2
-                    ${DirectX_INCLUDE_DIR}
+                    ${DIRECTX_INCLUDE_DIR}
                     ${KODI_INCLUDE_DIR})
 
 set(MD2_SOURCES src/Milkdrop2XBMC.cpp)
 
 add_subdirectory(lib/vis_milk2)
 
-set(DEPLIBS vis_milk2 ${DirectX_LIBRARY})
+set(DEPLIBS vis_milk2 ${DIRECTX_D3DX9_LIBRARY})
 
 build_addon(visualization.milkdrop2 MD2 DEPLIBS)
 
