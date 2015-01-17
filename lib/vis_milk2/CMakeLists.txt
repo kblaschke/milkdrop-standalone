@@ -5,6 +5,8 @@ enable_language(CXX)
 
 cmake_minimum_required(VERSION 2.6)
 
+remove_definitions(-DNOMINMAX)
+
 set(SOURCES ns-eel2/nseel-caltab.c
             ns-eel2/nseel-cfunc.c
             ns-eel2/nseel-compiler.c
