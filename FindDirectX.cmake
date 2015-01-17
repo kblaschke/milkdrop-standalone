@@ -1,31 +1,39 @@
+# - Try to find DirectX SDK
+# Once done this will define
+#
+#  DIRECTX_FOUND         - system has DirectX SDK
+#  DIRECTX_INCLUDE_DIR   - the DirectX include directories
+#  DIRECTX_LIBRARIES     - Link these to use DirectX SDK
+#  DIRECTX_D3D9_LIBRARY  - Link this to use D3D9
+#  DIRECTX_D3DX9_LIBRARY - Link this to use D3DX9
 
+FIND_PATH(DIRECTX_INCLUDE_DIR d3d9.h PATHS
+  "$ENV{DXSDK_DIR}Include"
+  "$ENV{PROGRAMFILES}/Microsoft DirectX SDK*/Include"
+  "C:/apps_x86/Microsoft DirectX SDK*/Include"
+  "C:/apps/Microsoft DirectX SDK*/Include"
+  "C:/Program Files (x86)/Microsoft DirectX SDK*/Include"
+  "C:/Program Files/Microsoft DirectX SDK*/Include"
+  NO_DEFAULT_PATH
+)
+FIND_PATH(DIRECTX_INCLUDE_DIR d3d9.h)
+GET_FILENAME_COMPONENT(DIRECTX_ROOT_DIR "${DIRECTX_INCLUDE_DIR}/.." ABSOLUTE)
 
-if(WIN32) # The only platform it makes sense to check for DirectX SDK
-  find_path(DirectX_INCLUDE_DIR d3d9.h
-            "$ENV{DXSDK_DIR}/Include")
-  mark_as_advanced(DirectX_INCLUDE_DIR)
-  if(DirectX_INCLUDE_DIR)
-    set(DirectX_ROOT_DIR "${DirectX_INCLUDE_DIR}/..") 
-  endif(DirectX_INCLUDE_DIR)
+IF(CMAKE_CL_64)
+  SET(DIRECTX_LIBRARY_PATHS "${DIRECTX_ROOT_DIR}/Lib/x64")
+ELSE()
+  SET(DIRECTX_LIBRARY_PATHS "${DIRECTX_ROOT_DIR}/Lib/x86" "${DIRECTX_ROOT_DIR}/Lib")
+ENDIF()
 
-  # dlls are in DirectX_ROOT_DIR/Developer Runtime/x64|x86
-  # lib files are in DirectX_ROOT_DIR/Lib/x64|x86
+FIND_LIBRARY(DIRECTX_D3D9_LIBRARY d3d9 ${DIRECTX_LIBRARY_PATHS} NO_DEFAULT_PATH)
+FIND_LIBRARY(DIRECTX_D3DX9_LIBRARY d3dx9 ${DIRECTX_LIBRARY_PATHS} NO_DEFAULT_PATH)
+SET(DIRECTX_LIBRARIES ${DIRECTX_D3D9_LIBRARY} ${DIRECTX_D3DX9_LIBRARY})
 
-  set(DirectX_LIBRARY_PATHS)
-  if(CMAKE_CL_64)
-    set(DirectX_LIBRARY_PATHS 
-      "${DirectX_ROOT_DIR}/Lib/x64")
-  else(CMAKE_CL_64)
-    set(DirectX_LIBRARY_PATHS 
-      "${DirectX_ROOT_DIR}/Lib/x86" "${DirectX_ROOT_DIR}/Lib")
-  endif(CMAKE_CL_64)
-
-  find_library(DirectX_LIBRARY d3d9 ${DirectX_LIBRARY_PATHS} NO_DEFAULT_PATH)
-  if(DirectX_INCLUDE_DIR AND DirectX_LIBRARY)
-    set(DirectX_FOUND true)
-  endif(DirectX_INCLUDE_DIR AND DirectX_LIBRARY)
-  mark_as_advanced(DirectX_LIBRARY)
-
-  include(FindPackageHandleStandardArgs)
-  find_package_handle_standard_args(DirectX DEFAULT_MSG ${DirectX_INCLUDE_DIR} ${DirectX_LIBRARY})
-endif(WIN32)
+# handle the QUIETLY and REQUIRED arguments and set DIRECTX_FOUND to TRUE if all listed variables are TRUE
+INCLUDE(FindPackageHandleStandardArgs)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(DIRECTX DEFAULT_MSG DIRECTX_ROOT_DIR DIRECTX_LIBRARIES DIRECTX_INCLUDE_DIR)
+MARK_AS_ADVANCED(
+  DIRECTX_INCLUDE_DIR
+  DIRECTX_D3D9_LIBRARY
+  DIRECTX_D3DX9_LIBRARY
+)
