@@ -37,7 +37,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     #define D3D_DEBUG_INFO  // declare this before including d3d9.h
 #endif
 #include <d3d9.h>
-#include <d3dx9.h>
+#include <d3d11.h>
+#include "../dx11/DX11Context.h"
 
 #define SNAP_WINDOWED_MODE_BLOCKSIZE  32    // or use 0 if you don't want snapping
 
@@ -63,7 +64,7 @@ class DXContext
 {
     public:
         // PUBLIC FUNCTIONS
-		DXContext(LPDIRECT3DDEVICE9 device, wchar_t* szIniFile);
+      DXContext(ID3D11Device* device, ID3D11DeviceContext* context, wchar_t* szIniFile);
         //DXContext(HWND hWndWinamp,HINSTANCE hInstance,LPCWSTR szClassName,LPCSTR szWindowCaption,WNDPROC pProc,LONG_PTR uWindowLong, int minimize_winamp, wchar_t* szIniFile);
         ~DXContext();
         BOOL StartOrRestartDevice(DXCONTEXT_PARAMS *pParams); // also serves as Init() function
@@ -92,7 +93,7 @@ class DXContext
         RECT m_monitor_work_rect;   // same, but excludes the taskbar area.
         RECT m_monitor_work_rect_orig; // original work rect; does not account for pseudo-multimon modes like 2048x768
         DXCONTEXT_PARAMS       m_current_mode;
-        LPDIRECT3DDEVICE9      m_lpDevice;
+        DX11Context*           m_lpDevice;
         D3DPRESENT_PARAMETERS  m_d3dpp;
         LPDIRECT3D9            m_lpD3D;
         D3DCAPS9               m_caps;
