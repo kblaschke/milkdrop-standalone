@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="visualization.milkdrop2"
-  version="1.0.0"
+  version="2.0.0"
   name="MilkDrop 2"
-  provider-name="Ryan Geiss, ported by MrC">
+  provider-name="Ryan Geiss, ported by MrC, DX11 by afedchin">
   <extension
     point="xbmc.player.musicviz"
     library_windx="visualization.milkdrop2.dll"/>
