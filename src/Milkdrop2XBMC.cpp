@@ -23,8 +23,11 @@
 #include <vector>
 #include "vis_milk2/plugin.h"
 
+#ifndef TARGET_WINDOWS
 #define TARGET_WINDOWS
-#include "kodi/xbmc_vis_dll.h"
+#endif
+
+#include "xbmc_vis_dll.h"
 
 CPlugin g_plugin;
 bool IsInitialized = false;
