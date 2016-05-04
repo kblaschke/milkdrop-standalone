@@ -26,7 +26,7 @@
 #include <memory>
 
 #define MAX_NUM_SHADERS    (4)
-#define MAX_VERTICES_COUNT (3072)
+#define MAX_VERTICES_COUNT (3072U)
 
 class DX11Context
 {

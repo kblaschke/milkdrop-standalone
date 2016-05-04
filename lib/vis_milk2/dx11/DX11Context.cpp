@@ -27,6 +27,7 @@
 #include <wrl.h>
 #include "../vis_milk2/support.h"
 #include "../vis_milk2/utility.h"
+#include <algorithm>
 
 using namespace DirectX;
 using namespace Microsoft::WRL;
@@ -534,7 +535,7 @@ void DX11Context::UpdateVBuffer(unsigned int iNumVerts, const void* pVData, unsi
   D3D11_MAPPED_SUBRESOURCE res;
   if (S_OK == m_pContext->Map(m_pVBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &res))
   {
-    memcpy(res.pData, pVData, min(iNumVerts, MAX_VERTICES_COUNT) * vertexStride);
+    memcpy(res.pData, pVData, std::min(iNumVerts, MAX_VERTICES_COUNT) * vertexStride);
     m_pContext->Unmap(m_pVBuffer, 0);
   }
 }
@@ -544,7 +545,7 @@ void DX11Context::UpdateIBuffer(unsigned int iNumIndices, const void* pIData)
   D3D11_MAPPED_SUBRESOURCE res;
   if (S_OK == m_pContext->Map(m_pIBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &res))
   {
-    memcpy(res.pData, pIData, min(iNumIndices, MAX_VERTICES_COUNT / 6) * sizeof(uint16_t));
+    memcpy(res.pData, pIData, std::min(iNumIndices, MAX_VERTICES_COUNT / 6) * sizeof(uint16_t));
     m_pContext->Unmap(m_pIBuffer, 0);
   }
 }
