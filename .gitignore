@@ -16,6 +16,8 @@ local.properties
 .settings/
 .loadpath
 
+visualization.*/addon.xml
+
 # External tool builders
 .externalToolBuilders/
 
@@ -150,6 +152,8 @@ ClientBin/
 *.[Pp]ublish.xml
 *.pfx
 *.publishsettings
+*.patch
+*.diff
 
 # RIA/Silverlight projects
 Generated_Code/
