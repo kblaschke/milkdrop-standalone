@@ -234,6 +234,11 @@ void DX11Context::GetRenderTarget(ID3D11Texture2D** ppTexture)
   }
 }
 
+void DX11Context::GetDepthView(ID3D11DepthStencilView** ppView)
+{
+  m_pContext->OMGetRenderTargets(0, nullptr, ppView);
+}
+
 void DX11Context::GetViewport(D3D11_VIEWPORT *vp)
 {
   unsigned int numVP = 1;
@@ -310,13 +315,16 @@ void DX11Context::SetRasterizerState(D3D11_CULL_MODE cullMode, D3D11_FILL_MODE f
     m_pContext->RSSetState(pState);
 }
 
-void DX11Context::SetRenderTarget(ID3D11Texture2D* pTexture)
+void DX11Context::SetRenderTarget(ID3D11Texture2D* pTexture, ID3D11DepthStencilView** ppView)
 {
-  ID3D11RenderTargetView* pRTView = NULL;
-  ID3D11DepthStencilView* pDSView = NULL;
+  ID3D11RenderTargetView* pRTView = nullptr;
+  ID3D11DepthStencilView* pDSView = nullptr;
 
-  // store current ZBuffer
-  m_pContext->OMGetRenderTargets(0, NULL, &pDSView);
+  if (ppView == nullptr)
+    // store current ZBuffer
+    m_pContext->OMGetRenderTargets(0, nullptr, &pDSView);
+  else
+    pDSView = *ppView;
 
   if (pTexture)
   {
@@ -331,7 +339,8 @@ void DX11Context::SetRenderTarget(ID3D11Texture2D* pTexture)
   m_pContext->OMSetRenderTargets(1, &pRTView, pDSView);
 
   SafeRelease(pRTView);
-  SafeRelease(pDSView);
+  if (ppView == nullptr)
+    SafeRelease(pDSView);
 }
 
 void DX11Context::SetSamplerState(UINT uSlot, D3D11_FILTER filter, D3D11_TEXTURE_ADDRESS_MODE addressMode)

@@ -48,11 +48,12 @@ public:
                             unsigned int iPrimCount, const void* pIData, const void* pVData, unsigned int vertexStride);
 
   void GetRenderTarget(ID3D11Texture2D** ppTexture);
+  void GetDepthView(ID3D11DepthStencilView** ppView);
   void GetViewport(D3D11_VIEWPORT *vp);
   void SetBlendState(bool bEnable, D3D11_BLEND srcBlend = D3D11_BLEND_ONE, D3D11_BLEND destBlend = D3D11_BLEND_ZERO);
   void SetDepth(bool bEnabled);
   void SetRasterizerState(D3D11_CULL_MODE cullMode, D3D11_FILL_MODE fillMode);
-  void SetRenderTarget(ID3D11Texture2D* pTexture);
+  void SetRenderTarget(ID3D11Texture2D* pTexture, ID3D11DepthStencilView** ppView = nullptr);
   void SetSamplerState(UINT uSlot, D3D11_FILTER filter, D3D11_TEXTURE_ADDRESS_MODE addressMode);
   void SetShader(unsigned int iIndex);
   void SetTexture(unsigned int iSlot, ID3D11Resource* pResource);

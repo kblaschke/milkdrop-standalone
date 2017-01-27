@@ -1224,11 +1224,15 @@ void CPlugin::BlurPasses()
         fscale[2] = 1.0f / (temp_max - temp_min);
         fbias [2] = -temp_min * fscale[2];
 
+        ID3D11DepthStencilView* origDSView = nullptr;
+        ID3D11DepthStencilView* emptyDSView = nullptr;
+        lpDevice->GetDepthView(&origDSView);
+
         // note: warped blit just rendered from VS0 to VS1.
         for (int i=0; i<passes; i++)
         {
             // hook up correct render target
-            lpDevice->SetRenderTarget(m_lpBlur[i]);
+            lpDevice->SetRenderTarget(m_lpBlur[i], &emptyDSView);
        
             // hook up correct source texture - assume there is only one, at stage 0
             lpDevice->SetTexture(0, (i==0) ? m_lpVS[0] : m_lpBlur[i-1]);
@@ -1302,14 +1306,15 @@ void CPlugin::BlurPasses()
             lpDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 2, v, sizeof(MYVERTEX));
 
             // clear texture bindings
-            lpDevice->SetTexture(0, NULL);
+            lpDevice->SetTexture(0, nullptr);
         }
     
-        lpDevice->SetRenderTarget(pBackBuffer);
-         pBackBuffer->Release();
-        lpDevice->SetPixelShader( NULL, NULL );
-        lpDevice->SetVertexShader( NULL, NULL );
-        lpDevice->SetTexture(0, NULL);
+        lpDevice->SetRenderTarget(pBackBuffer, &origDSView);
+        SafeRelease(pBackBuffer);
+        SafeRelease(origDSView);
+        lpDevice->SetPixelShader(nullptr, nullptr);
+        lpDevice->SetVertexShader(nullptr, nullptr);
+        lpDevice->SetTexture(0, nullptr);
         //lpDevice->SetFVF( MYVERTEX_FORMAT );
     #endif
 
