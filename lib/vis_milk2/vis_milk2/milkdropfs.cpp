@@ -79,10 +79,12 @@ static void MungeFPCW( WORD *pwOldCW )
 #endif
 }
 
+#if 0
 void RestoreFPCW(WORD wSave)
 {
     __asm fldcw wSave
 }
+#endif 
 
 int GetNumToSpawn(float fTime, float fDeltaT, float fRate, float fRegularity, int iNumSpawnedSoFar)
 {
