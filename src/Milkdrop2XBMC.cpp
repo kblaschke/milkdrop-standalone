@@ -40,7 +40,7 @@ extern "C" ADDON_STATUS ADDON_Create(void* hdl, void* props)
 	if (!props)
 		return ADDON_STATUS_UNKNOWN;
 
-	VIS_PROPS* visprops = (VIS_PROPS*)props;
+	AddonProps_Visualization* visprops = (AddonProps_Visualization*)props;
 
 	swprintf(g_plugin.m_szPluginsDirPath, L"%hs\\resources\\", visprops->presets);
 
@@ -59,7 +59,7 @@ extern "C" void Start( int iChannels, int iSamplesPerSec, int iBitsPerSample, co
 {
 }
 
-extern "C" void ADDON_Stop()
+extern "C" void Stop()
 {
 	if( IsInitialized )
 	{
@@ -227,7 +227,7 @@ extern "C" bool IsLocked()
 //-----------------------------------------------------------------------------
 extern "C" void ADDON_Destroy()
 {
-	ADDON_Stop();
+	Stop();
 }
 
 //-- GetStatus ---------------------------------------------------------------
