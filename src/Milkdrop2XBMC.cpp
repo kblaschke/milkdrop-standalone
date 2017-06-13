@@ -27,59 +27,58 @@
 #define TARGET_WINDOWS
 #endif
 
-#include "xbmc_vis_dll.h"
+#include <kodi/addon-instance/Visualization.h>
 
 CPlugin g_plugin;
 bool IsInitialized = false;
 
-int	GNumPresets = 0;
-char** GAllPresetStrings = NULL;
-
-extern "C" ADDON_STATUS ADDON_Create(void* hdl, void* props)
+class CVisualizationMilkdrop2
+  : public kodi::addon::CAddonBase
+  , public kodi::addon::CInstanceVisualization
 {
-	if (!props)
-		return ADDON_STATUS_UNKNOWN;
+public:
+  virtual ~CVisualizationMilkdrop2();
 
-	AddonProps_Visualization* visprops = (AddonProps_Visualization*)props;
+  virtual ADDON_STATUS Create() override;
+  virtual void Stop() override;
+  virtual void AudioData(const float* audioData, int audioDataLength, float* freqData, int freqDataLength) override;
+  virtual void Render() override;
+  virtual bool GetPresets(std::vector<std::string>& presets) override;
+  virtual int GetActivePreset() override;
+  virtual bool PrevPreset() override;
+  virtual bool NextPreset() override;
+  virtual bool LoadPreset(int select) override;
+  virtual bool RandomPreset() override;
+  virtual bool LockPreset(bool lockUnlock) override;
+};
 
-	swprintf(g_plugin.m_szPluginsDirPath, L"%hs\\resources\\", visprops->presets);
+ADDON_STATUS CVisualizationMilkdrop2::Create()
+{
+	swprintf(g_plugin.m_szPluginsDirPath, L"%hs\\resources\\", Presets());
 
   if (FALSE == g_plugin.PluginPreInitialize(0, 0))
     return ADDON_STATUS_UNKNOWN;
 
-  if (FALSE == g_plugin.PluginInitialize((ID3D11DeviceContext*)visprops->device, visprops->x, visprops->y, visprops->width, visprops->height, visprops->pixelRatio))
+  if (FALSE == g_plugin.PluginInitialize(static_cast<ID3D11DeviceContext*>(Device()), X(), Y(), Width(), Height(), static_cast<double>(Width()) / static_cast<double>(Height())))
     return ADDON_STATUS_UNKNOWN;
 
   IsInitialized = true;
-	return ADDON_STATUS_NEED_SETTINGS;
-//  return ADDON_STATUS_NEED_SAVEDSETTINGS; // We need some settings to be saved later before we quit this plugin
+	return ADDON_STATUS_OK;
 }
 
-extern "C" void Start( int iChannels, int iSamplesPerSec, int iBitsPerSample, const char* szSongName )
-{
-}
-
-extern "C" void Stop()
+void CVisualizationMilkdrop2::Stop()
 {
 	if( IsInitialized )
 	{
 		g_plugin.PluginQuit();
 	
-		for( int i = 0;  i < GNumPresets; i++ )
-		{
-			delete[] GAllPresetStrings[ i ];
-		}
-
-		delete[] GAllPresetStrings;
-		GAllPresetStrings = NULL;
-
 		IsInitialized = false;
 	}
 }
 
 unsigned char waves[2][576];
 
-extern "C" void AudioData(const float* pAudioData, int iAudioDataLength, float *pFreqData, int iFreqDataLength)
+void CVisualizationMilkdrop2::AudioData(const float* pAudioData, int iAudioDataLength, float *pFreqData, int iFreqDataLength)
 {
 	int ipos=0;
 	while (ipos < 576)
@@ -94,61 +93,45 @@ extern "C" void AudioData(const float* pAudioData, int iAudioDataLength, float *
 	}
 }
 
-extern "C" void Render()
+void CVisualizationMilkdrop2::Render()
 {
 	g_plugin.PluginRender(waves[0], waves[1]);
 }
 
-extern "C" void GetInfo(VIS_INFO* pInfo)
-
+bool CVisualizationMilkdrop2::NextPreset()
 {
-	pInfo->bWantsFreq = false;
-	pInfo->iSyncDelay = 0;
+  g_plugin.NextPreset(1.0f);
+  return true;
 }
 
-extern "C" bool OnAction(long action, const void *param)
+bool CVisualizationMilkdrop2::PrevPreset()
 {
-	bool bHandled = false;
+  g_plugin.PrevPreset(1.0f);
+  return true;
+}
 
-	if( action == VIS_ACTION_UPDATE_TRACK )
-	{
-	}
-	else if( action == VIS_ACTION_UPDATE_ALBUMART )
-	{
-	}
-	else if (action == VIS_ACTION_NEXT_PRESET)
-	{
-		g_plugin.NextPreset(1.0f);
-		bHandled = true;
-	}
-	else if (action == VIS_ACTION_PREV_PRESET)
-	{
-    g_plugin.PrevPreset(1.0f);
-    bHandled = true;
-  }
-	else if (action == VIS_ACTION_LOAD_PRESET && param)
-	{
-		g_plugin.m_nCurrentPreset = (*(int *)param) + g_plugin.m_nDirs;
+bool CVisualizationMilkdrop2::LoadPreset(int select)
+{
+  g_plugin.m_nCurrentPreset = select + g_plugin.m_nDirs;
 
-		wchar_t szFile[MAX_PATH] = {0};
-		lstrcpyW(szFile, g_plugin.m_szPresetDir);	// note: m_szPresetDir always ends with '\'
-		lstrcatW(szFile, g_plugin.m_presets[g_plugin.m_nCurrentPreset].szFilename.c_str());
+  wchar_t szFile[MAX_PATH] = { 0 };
+  lstrcpyW(szFile, g_plugin.m_szPresetDir);	// note: m_szPresetDir always ends with '\'
+  lstrcatW(szFile, g_plugin.m_presets[g_plugin.m_nCurrentPreset].szFilename.c_str());
 
-		g_plugin.LoadPreset(szFile, 1.0f);
-		bHandled = true;
-	}
-	else if (action == VIS_ACTION_LOCK_PRESET)
-	{
-    g_plugin.m_bPresetLockedByUser = !g_plugin.m_bPresetLockedByUser;
-    bHandled = true;
-  }
-	else if (action == VIS_ACTION_RANDOM_PRESET)
-	{
-		g_plugin.LoadRandomPreset(1.0f);
-		bHandled = true;
-	}
+  g_plugin.LoadPreset(szFile, 1.0f);
+  return true;
+}
 
-	return bHandled;
+bool CVisualizationMilkdrop2::LockPreset(bool lockUnlock)
+{
+  g_plugin.m_bPresetLockedByUser = lockUnlock;
+  return true;
+}
+
+bool CVisualizationMilkdrop2::RandomPreset()
+{
+  g_plugin.LoadRandomPreset(1.0f);
+  return true;
 }
 
 char* WideToUTF8( const wchar_t* WFilename )
@@ -162,47 +145,29 @@ char* WideToUTF8( const wchar_t* WFilename )
 //-- GetPresets ---------------------------------------------------------------
 // Return a list of presets to XBMC for display
 //-----------------------------------------------------------------------------
-extern "C" unsigned int GetPresets(char ***presets)
+bool CVisualizationMilkdrop2::GetPresets(std::vector<std::string>& presets)
 {
-	if( !presets || !IsInitialized )
-	{
-		return 0;
-	}
+	if(!IsInitialized )
+		return false;
 
 	while( !g_plugin.m_bPresetListReady )
 	{
 
 	}
 
-	if( GAllPresetStrings )
-	{
-		for( int i = 0;  i < GNumPresets; i++ )
-		{
-			delete[] GAllPresetStrings[ i ];
-		}
-
-		delete[] GAllPresetStrings;
-	}
-
-
-	GNumPresets = g_plugin.m_nPresets - g_plugin.m_nDirs;
-
-	GAllPresetStrings = new char*[ GNumPresets ];
-
-	for( int i = 0;  i < GNumPresets; i++ )
+	for( int i = 0;  i < g_plugin.m_nPresets - g_plugin.m_nDirs; ++i)
 	{
 		PresetInfo& Info = g_plugin.m_presets[ i + g_plugin.m_nDirs ];
-		GAllPresetStrings[ i ] = WideToUTF8( Info.szFilename.c_str() );
+    presets.push_back(WideToUTF8( Info.szFilename.c_str() ));
 	}
 
-	*presets = GAllPresetStrings;
-	return GNumPresets;
+	return true;
 }
 
 //-- GetPreset ----------------------------------------------------------------
 // Return the index of the current playing preset
 //-----------------------------------------------------------------------------
-extern "C" unsigned GetPreset()
+int CVisualizationMilkdrop2::GetActivePreset()
 {
 	if( IsInitialized )
 	{
@@ -210,48 +175,16 @@ extern "C" unsigned GetPreset()
 		CurrentPreset -= g_plugin.m_nDirs;
 		return CurrentPreset;
 	}
-	return 0;
-}
-
-//-- IsLocked -----------------------------------------------------------------
-// Returns true if preset is locked
-//-----------------------------------------------------------------------------
-extern "C" bool IsLocked()
-{
-	return false;
+	return -1;
 }
 
 //-- Destroy-------------------------------------------------------------------
 // Do everything before unload of this add-on
 // !!! Add-on master function !!!
 //-----------------------------------------------------------------------------
-extern "C" void ADDON_Destroy()
+CVisualizationMilkdrop2::~CVisualizationMilkdrop2()
 {
 	Stop();
 }
 
-//-- GetStatus ---------------------------------------------------------------
-// Returns the current Status of this visualisation
-// !!! Add-on master function !!!
-//-----------------------------------------------------------------------------
-extern "C" ADDON_STATUS ADDON_GetStatus()
-{
-	return ADDON_STATUS_OK;
-}
-
-extern "C" ADDON_STATUS ADDON_SetSetting(const char* id, const void* value)
-{
-	/*
-	if ( !id || !value || IsInitialized == NULL )
-		return ADDON_STATUS_UNKNOWN;
-	*/
-	return ADDON_STATUS_OK;
-}
-
-//-- GetSubModules ------------------------------------------------------------
-// Return any sub modules supported by this vis
-//-----------------------------------------------------------------------------
-extern "C"   unsigned int GetSubModules(char ***presets)
-{
-  return 0; // this vis supports 0 sub modules
-}
+ADDONCREATOR(CVisualizationMilkdrop2) // Don't touch this!
