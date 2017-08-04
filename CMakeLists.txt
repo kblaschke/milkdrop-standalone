@@ -15,6 +15,9 @@ set(MD2_SOURCES src/Milkdrop2XBMC.cpp)
 add_subdirectory(lib/vis_milk2)
 
 set(DEPLIBS vis_milk2)
+if(CORE_SYSTEM_NAME STREQUAL windowsstore)
+  add_definitions(-D_WIN32_WINNT=0x0A00 -D_WINDOWS -D_CRT_NON_CONFORMING_SWPRINTFS)
+endif()
 
 build_addon(visualization.milkdrop2 MD2 DEPLIBS)
 

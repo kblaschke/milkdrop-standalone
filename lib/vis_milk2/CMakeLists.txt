@@ -56,5 +56,9 @@ set(SOURCES dx11/CommonStates.cpp
             vis_milk2/texmgr.cpp
             vis_milk2/utility.cpp)
 
-add_definitions(-D_WIN32_WINNT=0x0600 -DNTDDI_VERSION=0x06000000 -D_WINDOWS)
+if(CORE_SYSTEM_NAME STREQUAL windowsstore)
+  add_definitions(-D_WIN32_WINNT=0x0A00 -D_WINDOWS -D_CRT_NON_CONFORMING_SWPRINTFS)
+else()
+  add_definitions(-D_WIN32_WINNT=0x0600 -D_WINDOWS)
+endif()
 add_library(vis_milk2 STATIC ${SOURCES} ${SHADER_INCLUDES})

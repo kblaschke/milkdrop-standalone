@@ -34,6 +34,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <assert.h>
 #include <math.h>
 #include "../dx11/DX11Context.h"
+#include "../dx11/DirectXHelpers.h"
 
 #define COLOR_NORM(x) (((int)(x*255)&0xFF) / 255.0f)
 #define COPY_COLOR(x, y) {x.a = y.a; x.r = y.r; x.g = y.g; x.b = y.b;}

@@ -1273,7 +1273,7 @@ static char *preprocessCode(compileContext *ctx, char *expression)
 
 					len = l_ptr - buf;
 
-					l_ptr = strdup(l_ptr); // doesn't need to be preprocessed since it just was
+					l_ptr = _strdup(l_ptr); // doesn't need to be preprocessed since it just was
 	       		}
 				if (preprocSymbols[n].op[1]) expression++;
 

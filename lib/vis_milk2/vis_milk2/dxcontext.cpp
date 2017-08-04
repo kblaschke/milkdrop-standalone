@@ -39,17 +39,17 @@ DXContext::DXContext(ID3D11Device* device, ID3D11DeviceContext* context, wchar_t
 	m_lpDevice = new DX11Context(device, context);
 	m_hmod_d3d9 = NULL;
 	m_hmod_d3dx9 = NULL;
-	m_zFormat = D3DFMT_UNKNOWN;
-	for (int i=0; i<MAX_DXC_ADAPTERS; i++)
-		m_orig_windowed_mode_format[i] = D3DFMT_UNKNOWN;
-	m_ordinal_adapter = D3DADAPTER_DEFAULT;
+	//m_zFormat = D3DFMT_UNKNOWN;
+	//for (int i=0; i<MAX_DXC_ADAPTERS; i++)
+	//	m_orig_windowed_mode_format[i] = D3DFMT_UNKNOWN;
+	//m_ordinal_adapter = D3DADAPTER_DEFAULT;
 	m_winamp_minimized = 0;
 	m_truly_exiting = 0;
 	m_bpp = 0;
 	m_frame_delay = 0;
 	StringCbCopyW(m_szIniFile, sizeof(m_szIniFile), szIniFile);
-	m_szDriver[0] = 0;
-	m_szDesc[0] = 0;
+	//m_szDriver[0] = 0;
+	//m_szDesc[0] = 0;
 
 	// clear the error register
 
@@ -391,7 +391,7 @@ BOOL DXContext::Internal_Init(DXCONTEXT_PARAMS *pParams, BOOL bFirstInit)
 */
 
 	// get device caps:
-	memset(&m_caps, 0, sizeof(m_caps));
+	//memset(&m_caps, 0, sizeof(m_caps));
 	//m_lpDevice->GetDeviceCaps(&m_caps);
 	m_bpp = 32;
 

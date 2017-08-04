@@ -208,12 +208,11 @@ int texmgr::LoadTex(wchar_t *szFilename, int iSlot, char *szInitCode, char *szCo
 		wcscpy(m_tex[iSlot].szFileName, szFilename);
 
     HRESULT hr = m_lpDD->CreateTextureFromFile(szFilename, &m_tex[iSlot].pSurface);
-    if (hr != D3D_OK)
+    if (hr != S_OK)
     {
       switch (hr)
       {
       case E_OUTOFMEMORY:
-      case D3DERR_OUTOFVIDEOMEMORY:
         return TEXMGR_ERR_OUTOFMEM;
       default:
         return TEXMGR_ERR_BADFILE;

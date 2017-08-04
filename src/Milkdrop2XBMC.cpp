@@ -54,7 +54,7 @@ public:
 
 ADDON_STATUS CVisualizationMilkdrop2::Create()
 {
-	swprintf(g_plugin.m_szPluginsDirPath, L"%hs\\resources\\", Presets());
+	swprintf(g_plugin.m_szPluginsDirPath, L"%hs\\resources\\", Presets().c_str());
 
   if (FALSE == g_plugin.PluginPreInitialize(0, 0))
     return ADDON_STATUS_UNKNOWN;
@@ -115,8 +115,8 @@ bool CVisualizationMilkdrop2::LoadPreset(int select)
   g_plugin.m_nCurrentPreset = select + g_plugin.m_nDirs;
 
   wchar_t szFile[MAX_PATH] = { 0 };
-  lstrcpyW(szFile, g_plugin.m_szPresetDir);	// note: m_szPresetDir always ends with '\'
-  lstrcatW(szFile, g_plugin.m_presets[g_plugin.m_nCurrentPreset].szFilename.c_str());
+  wcscpy(szFile, g_plugin.m_szPresetDir);	// note: m_szPresetDir always ends with '\'
+  wcscat(szFile, g_plugin.m_presets[g_plugin.m_nCurrentPreset].szFilename.c_str());
 
   g_plugin.LoadPreset(szFile, 1.0f);
   return true;
