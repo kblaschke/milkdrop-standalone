@@ -111,7 +111,6 @@ float   GetWinampSongLen(HWND hWndWinamp);      // returns answer in seconds
     #define PROFILE_END(s)
 #endif
 
-int GetDX9TexFormatBitsPerPixel(D3DFORMAT fmt);
 int GetDX11TexFormatBitsPerPixel(DXGI_FORMAT fmt);
 
 #endif

@@ -391,9 +391,9 @@ public:
         TexInfoList     m_textures;    
         bool m_bNeedRescanTexturesDir;
         // vertex declarations:
-        IDirect3DVertexDeclaration9* m_pSpriteVertDecl;
-        IDirect3DVertexDeclaration9* m_pWfVertDecl;
-        IDirect3DVertexDeclaration9* m_pMyVertDecl;
+        //IDirect3DVertexDeclaration9* m_pSpriteVertDecl;
+        //IDirect3DVertexDeclaration9* m_pWfVertDecl;
+        //IDirect3DVertexDeclaration9* m_pMyVertDecl;
 
         XMFLOAT4 m_rand_frame;  // 4 random floats (0..1); randomized once per frame; fed to pixel shaders.
 

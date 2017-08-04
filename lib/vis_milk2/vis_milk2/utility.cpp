@@ -85,32 +85,42 @@ float GetPrivateProfileFloatW(wchar_t *szSectionName, wchar_t *szKeyName, float 
     wchar_t string[64];
     wchar_t szDefault[64];
     float ret = fDefault;
-
+#if 0
     _swprintf_l(szDefault, L"%f", g_use_C_locale, fDefault);
 
     if (GetPrivateProfileStringW(szSectionName, szKeyName, szDefault, string, 64, szIniFile) > 0)
     {
         _swscanf_l(string, L"%f", g_use_C_locale, &ret);
     }
+#endif
     return ret;
 }
 
 bool WritePrivateProfileFloatW(float f, wchar_t *szKeyName, wchar_t *szIniFile, wchar_t *szSectionName)
 {
     wchar_t szValue[32];
+#if 0
     _swprintf_l(szValue, L"%f", g_use_C_locale, f);
     return (WritePrivateProfileStringW(szSectionName, szKeyName, szValue, szIniFile) != 0);
+#else
+    return false;
+#endif
 }
 
 bool WritePrivateProfileIntW(int d, wchar_t *szKeyName, wchar_t *szIniFile, wchar_t *szSectionName)
 {
     wchar_t szValue[32];
+#if 0 
     swprintf(szValue, L"%d", d);
     return (WritePrivateProfileStringW(szSectionName, szKeyName, szValue, szIniFile) != 0);
+#else
+    return false;
+#endif
 }
 
 void SetScrollLock(int bNewState, bool bPreventHandling)
 {
+#if 0
 	if(bPreventHandling) return;
 
     if (bNewState != (GetKeyState(VK_SCROLL) & 1))
@@ -127,6 +137,7 @@ void SetScrollLock(int bNewState, bool bPreventHandling)
                       KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP,
                       0);
     }
+#endif
 }
 
 void RemoveExtension(wchar_t *str)

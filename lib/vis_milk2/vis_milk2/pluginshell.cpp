@@ -145,6 +145,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //#include "../Winamp/wa_ipc.h"
 //#include "../nu/AutoCharFn.h"
 #include <mmsystem.h>
+#include "../dx11/DirectXHelpers.h"
 #pragma comment(lib,"winmm.lib")    // for timeGetTime
 
 // STATE VALUES & VERTEX FORMATS FOR HELP SCREEN TEXTURE:
@@ -246,6 +247,7 @@ DX11Context* CPluginShell::GetDevice()
 {
 	if (m_lpDX) return m_lpDX->m_lpDevice; else return NULL;
 };
+#if 0
 D3DCAPS9* CPluginShell::GetCaps()
 {
 	if (m_lpDX) return &(m_lpDX->m_caps);  else return NULL;
@@ -258,29 +260,34 @@ D3DFORMAT CPluginShell::GetBackBufZFormat()
 {
 	if (m_lpDX) return m_lpDX->GetZFormat(); else return D3DFMT_UNKNOWN;
 };
+#endif
 IUnknown* CPluginShell::GetFont(eFontIndex idx)
 {
 	if (idx >= 0 && idx < NUM_BASIC_FONTS + NUM_EXTRA_FONTS) return m_d3dx_font[idx]; else return NULL;
 };
 char* CPluginShell::GetDriverFilename()
 {
-	if (m_lpDX) return m_lpDX->GetDriver(); else return NULL;
+	/*if (m_lpDX) return m_lpDX->GetDriver(); else*/ return NULL;
 };
 char* CPluginShell::GetDriverDescription()
 {
-	if (m_lpDX) return m_lpDX->GetDesc(); else return NULL;
+	/*if (m_lpDX) return m_lpDX->GetDesc(); else*/ return NULL;
 };
 
 int CPluginShell::InitNondx9Stuff()
 {
+#ifdef TARGET_WINDOWS_DESKTOP
 	timeBeginPeriod(1);
+#endif
 	m_fftobj.Init(576, NUM_FREQUENCIES);
 	return AllocateMyNonDx9Stuff();
 }
 
 void CPluginShell::CleanUpNondx9Stuff()
 {
-	timeEndPeriod(1);
+#ifdef TARGET_WINDOWS_DESKTOP
+  timeEndPeriod(1);
+#endif
 	CleanUpMyNonDx9Stuff();
 	m_fftobj.CleanUp();
 }
@@ -318,7 +325,7 @@ void CPluginShell::CleanUpDX9Stuff(int final_cleanup)
 void CPluginShell::StuffParams(DXCONTEXT_PARAMS *pParams)
 {
 	pParams->screenmode   = m_screenmode;
-	pParams->display_mode = m_disp_mode_fs;
+	//pParams->display_mode = m_disp_mode_fs;
 	pParams->nbackbuf     = 1;
 	pParams->m_dualhead_horz = m_dualhead_horz;
 	pParams->m_dualhead_vert = m_dualhead_vert;
@@ -328,20 +335,20 @@ void CPluginShell::StuffParams(DXCONTEXT_PARAMS *pParams)
 	case WINDOWED:
 		pParams->allow_page_tearing = m_allow_page_tearing_w;
 		pParams->adapter_guid       = m_adapter_guid_windowed;
-		pParams->multisamp          = m_multisample_windowed;
+		//pParams->multisamp          = m_multisample_windowed;
 		strcpy(pParams->adapter_devicename, m_adapter_devicename_windowed);
 		break;
 	case FULLSCREEN:
 	case FAKE_FULLSCREEN:
 		pParams->allow_page_tearing = m_allow_page_tearing_fs;
 		pParams->adapter_guid       = m_adapter_guid_fullscreen;
-		pParams->multisamp          = m_multisample_fullscreen;
+		//pParams->multisamp          = m_multisample_fullscreen;
 		strcpy(pParams->adapter_devicename, m_adapter_devicename_fullscreen);
 		break;
 	case DESKTOP:
 		pParams->allow_page_tearing = m_allow_page_tearing_dm;
 		pParams->adapter_guid       = m_adapter_guid_desktop;
-		pParams->multisamp          = m_multisample_desktop;
+		//pParams->multisamp          = m_multisample_desktop;
 		strcpy(pParams->adapter_devicename, m_adapter_devicename_desktop);
 		break;
 	}
@@ -480,6 +487,7 @@ int CPluginShell::PluginPreInitialize(HWND hWinampWnd, HINSTANCE hWinampInstance
 	m_fontinfo[NUM_BASIC_FONTS + 4].bAntiAliased = EXTRA_FONT_5_DEFAULT_AA;
 #endif
 
+#if 0
 	m_disp_mode_fs.Width = DEFAULT_FULLSCREEN_WIDTH;
 	m_disp_mode_fs.Height = DEFAULT_FULLSCREEN_HEIGHT;
 	m_disp_mode_fs.Format = D3DFMT_UNKNOWN;
@@ -495,7 +503,7 @@ int CPluginShell::PluginPreInitialize(HWND hWinampWnd, HINSTANCE hWinampInstance
 		m_disp_mode_fs.RefreshRate = dm.dmDisplayFrequency;
 		m_disp_mode_fs.Format = (dm.dmBitsPerPel==16) ? D3DFMT_R5G6B5 : D3DFMT_X8R8G8B8;
 	}
-
+#endif
 	// PROTECTED STRUCTURES/POINTERS
 	int i;
 	for (i=0; i<NUM_BASIC_FONTS + NUM_EXTRA_FONTS; i++)
@@ -642,7 +650,7 @@ int CPluginShell::PluginPreInitialize(HWND hWinampWnd, HINSTANCE hWinampInstance
 	m_nTextWndWidth = 0;
 	m_nTextWndHeight = 0;
 	m_bTextWindowClassRegistered = false;
-	m_vjd3d9        = NULL;
+	//m_vjd3d9        = NULL;
 	m_vjd3d9_device = NULL;
 
 	//-----
@@ -697,15 +705,18 @@ static wchar_t temp[64];
 }
 
 void CPluginShell::READ_FONT(int n){
+#if 0
 	GetPrivateProfileStringW(L"settings",BuildSettingName(L"szFontFace",n),m_fontinfo[n].szFace,m_fontinfo[n].szFace,sizeof(m_fontinfo[n].szFace), m_szConfigIniFile);
 	m_fontinfo[n].nSize   = GetPrivateProfileIntW(L"settings",BuildSettingName(L"nFontSize",n),m_fontinfo[n].nSize  ,m_szConfigIniFile);
 	m_fontinfo[n].bBold   = GetPrivateProfileIntW(L"settings",BuildSettingName(L"bFontBold",n),m_fontinfo[n].bBold  ,m_szConfigIniFile);
 	m_fontinfo[n].bItalic = GetPrivateProfileIntW(L"settings",BuildSettingName(L"bFontItalic",n),m_fontinfo[n].bItalic,m_szConfigIniFile);
 	m_fontinfo[n].bAntiAliased = GetPrivateProfileIntW(L"settings",BuildSettingName(L"bFontAA",n),m_fontinfo[n].bItalic,m_szConfigIniFile);
+#endif
 }
 
 void CPluginShell::ReadConfig()
 {
+#if 0
 	int old_ver    = GetPrivateProfileIntW(L"settings",L"version"   ,-1,m_szConfigIniFile);
 	int old_subver = GetPrivateProfileIntW(L"settings",L"subversion",-1,m_szConfigIniFile);
 
@@ -788,14 +799,17 @@ void CPluginShell::ReadConfig()
 	// note: we don't call MyReadConfig() yet, because we
 	// want to completely finish CPluginShell's preinit (and ReadConfig)
 	// before calling CPlugin's preinit and ReadConfig.
+#endif
 }
 
 void CPluginShell::WRITE_FONT(int n){
+#if 0
 	WritePrivateProfileStringW(L"settings",BuildSettingName(L"szFontFace",n),m_fontinfo[n].szFace,m_szConfigIniFile);
 	WritePrivateProfileIntW(m_fontinfo[n].bBold,  BuildSettingName(L"bFontBold",n),   m_szConfigIniFile, L"settings");
 	WritePrivateProfileIntW(m_fontinfo[n].bItalic,BuildSettingName(L"bFontItalic",n), m_szConfigIniFile, L"settings");
 	WritePrivateProfileIntW(m_fontinfo[n].nSize,  BuildSettingName(L"nFontSize",n),   m_szConfigIniFile, L"settings");
 	WritePrivateProfileIntW(m_fontinfo[n].bAntiAliased, BuildSettingName(L"bFontAA",n),m_szConfigIniFile, L"settings");
+#endif
 }
 
 //----------------------------------------------------------------------
@@ -1034,7 +1048,7 @@ void CPluginShell::DoTime()
 	{
 		// get low-precision time
 		// precision: usually 1 ms (MILLIsecond) for win98, and 10 ms for win2k.
-		new_raw_time = (double)(timeGetTime()*0.001);
+		new_raw_time = (double)(GetTickCount64()*0.001);
 		elapsed = (float)(new_raw_time - m_last_raw_time);
 	}
 

@@ -541,6 +541,7 @@ void NSEEL_HOSTSTUB_EnterMutex(){}
 void NSEEL_HOSTSTUB_LeaveMutex(){}
 _locale_t g_use_C_locale = 0;
 // note: these must match layouts in support.h!!
+#if 0
 D3DVERTEXELEMENT9 g_MyVertDecl[] =
 {
     { 0, 0,  D3DDECLTYPE_FLOAT3,   D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 },
@@ -563,7 +564,7 @@ D3DVERTEXELEMENT9 g_SpriteVertDecl[] =
     { 0, 16, D3DDECLTYPE_FLOAT2,   D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0 },
     D3DDECL_END()
 };
-
+#endif
 //extern CSoundData*   pg_sound;	// declared in main.cpp
 extern CPlugin g_plugin;		// declared in main.cpp (note: was 'pg')
 
@@ -887,9 +888,9 @@ void CPlugin::MyPreInitialize()
     m_bNeedRescanTexturesDir = true;
 
     // vertex declarations:
-    m_pSpriteVertDecl = NULL;
-    m_pWfVertDecl = NULL;
-    m_pMyVertDecl = NULL;
+    //m_pSpriteVertDecl = NULL;
+    //m_pWfVertDecl = NULL;
+    //m_pMyVertDecl = NULL;
 
     m_gdi_title_font_doublesize  = NULL;
     m_d3dx_title_font_doublesize = NULL;
@@ -968,7 +969,7 @@ void CPlugin::MyPreInitialize()
 
     m_bHasFocus             = true;
     m_bHadFocus             = false;
-    m_bOrigScrollLockState  = GetKeyState(VK_SCROLL) & 1;
+    //m_bOrigScrollLockState  = GetKeyState(VK_SCROLL) & 1;
     // m_bMilkdropScrollLockState is derived at end of MyReadConfig()
 
 	m_nNumericInputMode   = NUMERIC_INPUT_MODE_CUST_MSG;
@@ -992,7 +993,7 @@ void CPlugin::MyPreInitialize()
 
     // note that the config dir can be under Program Files or Application Data!!
     wchar_t szConfigDir[MAX_PATH] = {0};
-    lstrcpyW(szConfigDir, GetConfigIniFile());
+    wcscpy(szConfigDir, GetConfigIniFile());
     wchar_t* p = wcsrchr(szConfigDir, L'\\');
     if (p) *(p+1) = 0;
    	swprintf(m_szMsgIniFile, L"%s%s", szConfigDir, MSG_INIFILE );
@@ -1003,6 +1004,7 @@ void CPlugin::MyPreInitialize()
 
 void CPlugin::MyReadConfig()
 {
+#if 0
     // Read the user's settings from the .INI file.
     // If you've added any controls to the config panel, read their value in
     //   from the .INI file here.
@@ -1080,7 +1082,7 @@ void CPlugin::MyReadConfig()
     // --------
 
 	GetPrivateProfileStringW(L"settings",L"szPresetDir",m_szPresetDir,m_szPresetDir,sizeof(m_szPresetDir),pIni);
-
+#endif
 	// bounds-checking:
 	if (m_nGridX > MAX_GRID_X)
 		m_nGridX = MAX_GRID_X;
@@ -1100,6 +1102,7 @@ void CPlugin::MyReadConfig()
 
 void CPlugin::MyWriteConfig()
 {
+#if 0
     // Write the user's settings to the .INI file.
     // This gets called only when the user runs the config panel and hits OK.
     // If you've added any controls to the config panel, write their value out 
@@ -1166,6 +1169,7 @@ void CPlugin::MyWriteConfig()
 	WritePrivateProfileFloatW(m_fSongTitleAnimDuration,  L"fSongTitleAnimDuration",   pIni, L"settings");
 	WritePrivateProfileFloatW(m_fTimeBetweenRandomSongTitles,L"fTimeBetweenRandomSongTitles",pIni, L"settings");
 	WritePrivateProfileFloatW(m_fTimeBetweenRandomCustomMsgs,L"fTimeBetweenRandomCustomMsgs",pIni, L"settings");
+#endif
 }
 
 //----------------------------------------------------------------------
@@ -1245,7 +1249,7 @@ int CPlugin::AllocateMyNonDx9Stuff()
     bSuccess = ReadFileToString(L"data\\include.fx", m_szShaderIncludeText, sizeof(m_szShaderIncludeText)-4, false);
 	if (!bSuccess) return false;
 	StripComments(m_szShaderIncludeText);
-	m_nShaderIncludeTextLen = lstrlen(m_szShaderIncludeText);
+	m_nShaderIncludeTextLen = strlen(m_szShaderIncludeText);
     bSuccess |= ReadFileToString(L"data\\warp_vs.fx", m_szDefaultWarpVShaderText, sizeof(m_szDefaultWarpVShaderText), true);
     if (!bSuccess) return false;
     bSuccess |= ReadFileToString(L"data\\warp_ps.fx", m_szDefaultWarpPShaderText, sizeof(m_szDefaultWarpPShaderText), true);
@@ -1284,7 +1288,9 @@ void CancelThread(int max_wait_time_ms)
     
     if (g_bThreadAlive)
     {
+#ifdef TARGET_WINDOWS_DESKTOP
         TerminateThread(g_hThread,0);
+#endif
         g_bThreadAlive = false;
     }
 
@@ -2384,7 +2390,7 @@ bool CPlugin::AddNoiseTex(const wchar_t* szTexName, int size, int zoom_factor)
 
     // add it to m_textures[].  
     TexInfo x;  
-    lstrcpyW(x.texname, szTexName);
+    wcscpy(x.texname, szTexName);
     x.texptr  = pNoiseTex;
     //x.texsize_param = NULL;
     x.w = size;
@@ -2560,7 +2566,7 @@ bool CPlugin::AddNoiseVol(const wchar_t* szTexName, int size, int zoom_factor)
 
     // add it to m_textures[].  
     TexInfo x;  
-    lstrcpyW(x.texname, szTexName);
+    wcscpy(x.texname, szTexName);
     x.texptr  = pNoiseTex;
     //x.texsize_param = NULL;
     x.w = size;
@@ -2646,7 +2652,7 @@ bool CPlugin::EvictSomeTexture()
             }
         char buf[1024];
         sprintf(buf, "evicting at %d textures, %.1f MB\n", nEvictableFiles, nEvictableBytes*0.000001f);
-        OutputDebugString(buf);
+        //OutputDebugString(buf);
     }
     #endif
 
@@ -2738,7 +2744,7 @@ bool PickRandomTexture(const wchar_t* prefix, wchar_t* szRetTextureFilename)  //
                 continue;
 
             for (int i=0; i<sizeof(texture_exts)/sizeof(texture_exts[0]); i++)
-                if (!wcsicmp(texture_exts[i].c_str(), ext+1))
+                if (!_wcsicmp(texture_exts[i].c_str(), ext+1))
                 {
                     // valid texture found - add it to the list.  ("heart.jpg", for example)
                     texfiles.push_back( ffd.cFileName );
@@ -2757,14 +2763,14 @@ bool PickRandomTexture(const wchar_t* prefix, wchar_t* szRetTextureFilename)  //
     {
         // pick randomly from entire list
         int i = warand() % texfiles.size();
-        lstrcpyW(szRetTextureFilename, texfiles[i].c_str());
+        wcscpy(szRetTextureFilename, texfiles[i].c_str());
     }
     else
     {
         // only pick from files w/the right prefix
         StringVec temp_list;
         int N = texfiles.size();
-        int len = lstrlenW(prefix);
+        int len = wcslen(prefix);
 		int i;
         for (i=0; i<N; i++) 
             if (!_wcsnicmp(prefix, texfiles[i].c_str(), len))
@@ -2774,7 +2780,7 @@ bool PickRandomTexture(const wchar_t* prefix, wchar_t* szRetTextureFilename)  //
             return false;
         // pick randomly from the subset
         i = warand() % temp_list.size();
-        lstrcpyW(szRetTextureFilename, temp_list[i].c_str());
+        wcscpy(szRetTextureFilename, temp_list[i].c_str());
     }
     return true;
 }
@@ -2812,15 +2818,15 @@ void CShaderParams::CacheParams(CConstantTable* pCT, bool bHardErrors)
             // remove "sampler_" prefix to create root file name.  could still have "FW_" prefix or something like that.
             wchar_t szRootName[MAX_PATH];
             if (!strncmp(cd.Name, "sampler_", 8)) 
-                lstrcpyW(szRootName, AutoWide(&cd.Name[8]));
+              wcscpy(szRootName, AutoWide(&cd.Name[8]));
             else
-                lstrcpyW(szRootName, AutoWide(cd.Name));
+              wcscpy(szRootName, AutoWide(cd.Name));
 
             // also peel off "XY_" prefix, if it's there, to specify filtering & wrap mode.
             bool bBilinear = true;
             bool bWrap     = true;
             bool bWrapFilterSpecified = false;
-            if (lstrlenW(szRootName) > 3 && szRootName[2]==L'_') 
+            if (wcslen(szRootName) > 3 && szRootName[2]==L'_') 
             {
                 wchar_t temp[3];
                 temp[0] = szRootName[0];
@@ -2943,7 +2949,7 @@ void CShaderParams::CacheParams(CConstantTable* pCT, bool bHardErrors)
                     // peel off filename prefix ("rand13_smalltiled", for example)
                     wchar_t prefix[MAX_PATH];
                     if (szRootName[6]==L'_')
-                        lstrcpyW(prefix, &szRootName[7]);
+                      wcscpy(prefix, &szRootName[7]);
                     else
                         prefix[0] = 0;
                     szRootName[6] = 0;
@@ -3047,14 +3053,14 @@ void CShaderParams::CacheParams(CConstantTable* pCT, bool bHardErrors)
                                                                    NULL,             //palette
                                                                    (IDirect3DTexture9**)&x.texptr 
                                                                      );*/
-                            if (hr==D3DERR_OUTOFVIDEOMEMORY || hr==E_OUTOFMEMORY)
+                            if (hr==E_OUTOFMEMORY)
                             {
                                 // out of memory - try evicting something old and/or big
                                 if (g_plugin.EvictSomeTexture())
                                     continue;
                             }
 
-                            if (hr==D3D_OK)
+                            if (hr== S_OK)
                             {
                               D3D11_RESOURCE_DIMENSION type;
                               x.texptr->GetType(&type);
@@ -3160,9 +3166,9 @@ void CShaderParams::CacheParams(CConstantTable* pCT, bool bHardErrors)
                     // remove "texsize_" prefix to find root file name.
                     wchar_t szRootName[MAX_PATH];
                     if (!strncmp(cd.Name, "texsize_", 8)) 
-                        lstrcpyW(szRootName, AutoWide(&cd.Name[8]));
+                      wcscpy(szRootName, AutoWide(&cd.Name[8]));
                     else
-                        lstrcpyW(szRootName, AutoWide(cd.Name));
+                      wcscpy(szRootName, AutoWide(cd.Name));
 
                     // check for request for random texture.
                     // it should be a previously-seen random index - just fetch/reuse the name.
@@ -3181,7 +3187,7 @@ void CShaderParams::CacheParams(CConstantTable* pCT, bool bHardErrors)
                         swscanf(&szRootName[4], L"%d", &rand_slot);
                         if (rand_slot >= 0 && rand_slot <= 15)      // otherwise, not a special filename - ignore it
                             if (RandTexName[rand_slot].GetLength() > 0)
-                                lstrcpyW(szRootName, RandTexName[rand_slot].c_str());
+                              wcscpy(szRootName, RandTexName[rand_slot].c_str());
                     }
 
                     // see if <szRootName>.tga or .jpg has already been loaded.
@@ -3259,19 +3265,19 @@ bool CPlugin::RecompilePShader(const char* szShadersText, PShaderInfo *si, int s
     // note: ps_1_4 required for dependent texture lookups.
     //       ps_2_0 required for tex2Dbias.
 		char ver[32];
-		lstrcpy(ver, "ps_0_0");
+		strcpy(ver, "ps_0_0");
 		switch(PSVersion) {
 		case MD2_PS_NONE: 
 			// Even though the PRESET doesn't use shaders, if MilkDrop is running where it CAN do shaders,
 			//   we run all the old presets through (shader) emulation.
 			// This way, during a MilkDrop session, we are always calling either WarpedBlit() or WarpedBlit_NoPixelShaders(),
 			//   and blending always works.
-			lstrcpy(ver, "ps_4_0_level_9_1"); 
+			strcpy(ver, "ps_4_0_level_9_1"); 
 			break;  
-		case MD2_PS_2_0: lstrcpy(ver, "ps_4_0_level_9_1"); break;
-		case MD2_PS_2_X: lstrcpy(ver, "ps_4_0_level_9_3"); break; // we'll try ps_2_a first, LoadShaderFromMemory will try ps_2_b if compilation fails
-		case MD2_PS_3_0: lstrcpy(ver, "ps_4_0_level_9_3"); break;
-		case MD2_PS_4_0: lstrcpy(ver, "ps_4_0"); break;
+		case MD2_PS_2_0: strcpy(ver, "ps_4_0_level_9_1"); break;
+		case MD2_PS_2_X: strcpy(ver, "ps_4_0_level_9_3"); break; // we'll try ps_2_a first, LoadShaderFromMemory will try ps_2_b if compilation fails
+		case MD2_PS_3_0: strcpy(ver, "ps_4_0_level_9_3"); break;
+		case MD2_PS_4_0: strcpy(ver, "ps_4_0"); break;
 		default: assert(0); break;
 		}
 
@@ -3347,11 +3353,11 @@ bool CPlugin::LoadShaderFromMemory( const char* szOrigShaderText, char* szFn, ch
     char szWhichShader[64];
     switch(shaderType)
     {
-    case SHADER_WARP:  lstrcpy(szWhichShader, "warp"); break;
-    case SHADER_COMP:  lstrcpy(szWhichShader, "composite"); break;
-    case SHADER_BLUR:  lstrcpy(szWhichShader, "blur"); break;
-    case SHADER_OTHER: lstrcpy(szWhichShader, "(other)"); break;
-    default:           lstrcpy(szWhichShader, "(unknown)"); break;
+    case SHADER_WARP:  strcpy(szWhichShader, "warp"); break;
+    case SHADER_COMP:  strcpy(szWhichShader, "composite"); break;
+    case SHADER_BLUR:  strcpy(szWhichShader, "blur"); break;
+    case SHADER_OTHER: strcpy(szWhichShader, "(other)"); break;
+    default:           strcpy(szWhichShader, "(unknown)"); break;
     }
 
     ID3DBlob* pShaderByteCode;
@@ -3365,19 +3371,19 @@ bool CPlugin::LoadShaderFromMemory( const char* szOrigShaderText, char* szFn, ch
     int writePos = 0;
 
     // paste the universal #include
-    lstrcpy(&szShaderText[writePos], m_szShaderIncludeText);  // first, paste in the contents of 'inputs.fx' before the actual shader text.  Has 13's and 10's.
+    strcpy(&szShaderText[writePos], m_szShaderIncludeText);  // first, paste in the contents of 'inputs.fx' before the actual shader text.  Has 13's and 10's.
     writePos += m_nShaderIncludeTextLen;
 
     // paste in any custom #defines for this shader type
     if (shaderType == SHADER_WARP && szProfile[0]=='p') 
     {
-        lstrcpy(&szShaderText[writePos], szWarpDefines);
-        writePos += lstrlen(szWarpDefines);
+        strcpy(&szShaderText[writePos], szWarpDefines);
+        writePos += strlen(szWarpDefines);
     }
     else if (shaderType == SHADER_COMP && szProfile[0]=='p')
     {
-        lstrcpy(&szShaderText[writePos], szCompDefines);
-        writePos += lstrlen(szCompDefines);
+        strcpy(&szShaderText[writePos], szCompDefines);
+        writePos += strlen(szCompDefines);
     }
 
     // paste in the shader itself - converting LCC's to 13+10's.
@@ -3456,11 +3462,11 @@ bool CPlugin::LoadShaderFromMemory( const char* szOrigShaderText, char* szFn, ch
         if (p)
         {
             // insert "void PS(...params...)\n"
-            lstrcpy(temp, p);
+            strcpy(temp, p);
             const char *params = (shaderType==SHADER_WARP) ? szWarpParams : szCompParams;
             sprintf(p, "void %s( %s )\n", szFn, params);
-            p += lstrlen(p);
-            lstrcpy(p, temp);
+            p += strlen(p);
+            strcpy(p, temp);
 
             // find the starting curly brace
             p = strchr(p, '{');
@@ -3469,10 +3475,10 @@ bool CPlugin::LoadShaderFromMemory( const char* szOrigShaderText, char* szFn, ch
                 // skip over it
                 p++;
                 // then insert "float3 ret = 0;"
-                lstrcpy(temp, p);
+                strcpy(temp, p);
                 sprintf(p, "%s\n", szFirstLine);
-                p += lstrlen(p);
-                lstrcpy(p, temp);
+                p += strlen(p);
+                strcpy(p, temp);
 
                 // find the ending curly brace
                 p = strrchr(p, '}');
@@ -3497,7 +3503,7 @@ bool CPlugin::LoadShaderFromMemory( const char* szOrigShaderText, char* szFn, ch
     // now really try to compile it.
 
 	bool failed=false;
-    int len = lstrlen(szShaderText);
+    int len = strlen(szShaderText);
     ID3DBlob *pCode, *pErrors;
 #if _DEBUG
     int flags = D3DCOMPILE_ENABLE_BACKWARDS_COMPATIBILITY;
@@ -3512,7 +3518,7 @@ bool CPlugin::LoadShaderFromMemory( const char* szOrigShaderText, char* szFn, ch
     if (failed && !strcmp(szProfile, "ps_4_0_level_9_1"))
     {
       SafeRelease(m_pShaderCompileErrors);
-      if (D3D_OK == D3DCompile(szShaderText, len, NULL, NULL, NULL, szFn, "ps_4_0_level_9_3", flags, 0, &pShaderByteCode, &m_pShaderCompileErrors))
+      if (S_OK == D3DCompile(szShaderText, len, NULL, NULL, NULL, szFn, "ps_4_0_level_9_3", flags, 0, &pShaderByteCode, &m_pShaderCompileErrors))
       {
         failed = false;
       }
@@ -3675,9 +3681,9 @@ void CPlugin::CleanUpMyDX9Stuff(int final_cleanup)
         GetDevice()->SetTexture(1, NULL);
     }*/
 
-    SafeRelease(m_pSpriteVertDecl);
-    SafeRelease(m_pWfVertDecl);
-    SafeRelease(m_pMyVertDecl);
+    //SafeRelease(m_pSpriteVertDecl);
+    //SafeRelease(m_pWfVertDecl);
+    //SafeRelease(m_pMyVertDecl);
 
     m_shaders.comp.Clear();
     m_shaders.warp.Clear();
@@ -3716,11 +3722,11 @@ void CPlugin::CleanUpMyDX9Stuff(int final_cleanup)
     SafeRelease(m_d3dx_title_font_doublesize);
 
     // NOTE: THIS CODE IS IN THE RIGHT PLACE.
-    if (m_gdi_title_font_doublesize)
-    {
-        DeleteObject(m_gdi_title_font_doublesize);
-        m_gdi_title_font_doublesize = NULL;
-    }
+    //if (m_gdi_title_font_doublesize)
+    //{
+    //    DeleteObject(m_gdi_title_font_doublesize);
+    //    m_gdi_title_font_doublesize = NULL;
+    //}
 
     m_texmgr.Finish();
 
@@ -3911,7 +3917,7 @@ void CPlugin::dumpmsg(wchar_t *s)
         OutputDebugStringW(s);
         if (s[0]) 
         {
-            int len = lstrlenW(s);
+            int len = wcslen(s);
             if (s[len-1] != L'\n')
                 OutputDebugStringW(L"\n");
         }
@@ -3929,8 +3935,8 @@ void CPlugin::PrevPreset(float fBlendTime)
 			m_nCurrentPreset = m_nDirs;
 
         wchar_t szFile[MAX_PATH];
-        lstrcpyW(szFile, m_szPresetDir);	// note: m_szPresetDir always ends with '\'
-        lstrcatW(szFile, m_presets[m_nCurrentPreset].szFilename.c_str());
+        wcscpy(szFile, m_szPresetDir);	// note: m_szPresetDir always ends with '\'
+        wcscat(szFile, m_presets[m_nCurrentPreset].szFilename.c_str());
 
     	LoadPreset(szFile, fBlendTime);
     }
@@ -4044,8 +4050,8 @@ void CPlugin::LoadRandomPreset(float fBlendTime)
 	// m_pPresetAddr[m_nCurrentPreset] points to the preset file to load (w/o the path);
 	// first prepend the path, then load section [preset00] within that file
 	wchar_t szFile[MAX_PATH] = {0};
-	lstrcpyW(szFile, m_szPresetDir);	// note: m_szPresetDir always ends with '\'
-	lstrcatW(szFile, m_presets[m_nCurrentPreset].szFilename.c_str());
+	wcscpy(szFile, m_szPresetDir);	// note: m_szPresetDir always ends with '\'
+	wcscat(szFile, m_presets[m_nCurrentPreset].szFilename.c_str());
 
     if (!bHistoryEmpty)
         m_presetHistoryPos = (m_presetHistoryPos+1) % PRESET_HIST_LEN;
@@ -4216,7 +4222,7 @@ void CPlugin::GenPlasma(int x0, int x1, int y0, int y1, float dt)
 void CPlugin::LoadPreset(const wchar_t *szPresetFilename, float fBlendTime)
 {
 	OutputDebugStringW(szPresetFilename);
-	OutputDebugString("\n");
+	//OutputDebugString("\n");
     // clear old error msg...
 //     if (m_nFramesSinceResize > 4)
 //     	ClearErrors(ERR_PRESET);     
@@ -4261,7 +4267,7 @@ void CPlugin::LoadPreset(const wchar_t *szPresetFilename, float fBlendTime)
     {
         // do it all NOW!
 	    if (szPresetFilename != m_szCurrentPresetFile) //[sic]
-		    lstrcpyW(m_szCurrentPresetFile, szPresetFilename);
+        wcscpy(m_szCurrentPresetFile, szPresetFilename);
 	    
 	    CState *temp = m_pState;
 	    m_pState = m_pOldState;
@@ -4310,7 +4316,7 @@ void CPlugin::LoadPreset(const wchar_t *szPresetFilename, float fBlendTime)
         m_nLoadingPreset = 1;   // this will cause LoadPresetTick() to get called over the next few frames...
 
         m_fLoadingPresetBlendTime = fBlendTime;
-        lstrcpyW(m_szLoadingPreset, szPresetFilename);
+        wcscpy(m_szLoadingPreset, szPresetFilename);
     }
 }
 
@@ -4332,7 +4338,7 @@ void CPlugin::LoadPresetTick()
     else if (m_nLoadingPreset == 8)
     {
         // finished loading the shaders - apply the preset!
-        lstrcpyW(m_szCurrentPresetFile, m_szLoadingPreset);
+      wcscpy(m_szCurrentPresetFile, m_szLoadingPreset);
         m_szLoadingPreset[0] = 0;
 	    
 	    CState *temp = m_pState;
@@ -4391,19 +4397,19 @@ void CPlugin::FindValidPresetDir()
     swprintf(m_szPresetDir, L"%spresets\\", m_szMilkdrop2Path );
     if (GetFileAttributesW(m_szPresetDir) != -1)
         return;
-    lstrcpyW(m_szPresetDir, m_szMilkdrop2Path);
+    wcscpy(m_szPresetDir, m_szMilkdrop2Path);
     if (GetFileAttributesW(m_szPresetDir) != -1)
         return;
-    lstrcpyW(m_szPresetDir, GetPluginsDirPath());
+    wcscpy(m_szPresetDir, GetPluginsDirPath());
     if (GetFileAttributesW(m_szPresetDir) != -1)
         return;
-    lstrcpyW(m_szPresetDir, L"c:\\program files\\winamp\\");  //getting desperate here
+    wcscpy(m_szPresetDir, L"c:\\program files\\winamp\\");  //getting desperate here
     if (GetFileAttributesW(m_szPresetDir) != -1)
         return;
-    lstrcpyW(m_szPresetDir, L"c:\\program files\\");  //getting desperate here
+    wcscpy(m_szPresetDir, L"c:\\program files\\");  //getting desperate here
     if (GetFileAttributesW(m_szPresetDir) != -1)
         return;
-    lstrcpyW(m_szPresetDir, L"c:\\");
+    wcscpy(m_szPresetDir, L"c:\\");
 }
 
 char* NextLine(char* p)
@@ -4463,7 +4469,7 @@ retry:
             FindClose(h);
         h = INVALID_HANDLE_VALUE;
         g_plugin.m_bPresetListReady = false;
-        lstrcpyW(g_plugin.m_szUpdatePresetMask, szMask);
+        wcscpy(g_plugin.m_szUpdatePresetMask, szMask);
         ZeroMemory(&fd, sizeof(fd));
 
         g_plugin.m_nPresets = 0;
@@ -4507,7 +4513,7 @@ retry:
 
     int  nMaxPSVersion = g_plugin.m_nMaxPSVersion;
     wchar_t szPresetDir[MAX_PATH];
-    lstrcpyW(szPresetDir, g_plugin.m_szPresetDir);
+    wcscpy(szPresetDir, g_plugin.m_szPresetDir);
 
 	LeaveCriticalSection(&g_cs);
 
@@ -4523,7 +4529,7 @@ retry:
         float fRating = 0;
 
 		wchar_t szFilename[512];
-		lstrcpyW(szFilename, fd.cFileName);
+    wcscpy(szFilename, fd.cFileName);
 
 		if (bIsDir)
 		{
@@ -4536,8 +4542,8 @@ retry:
 		else
 		{
 			// skip normal files not ending in ".milk"
-			int len = lstrlenW(fd.cFileName);
-			if (len < 5 || wcsicmp(fd.cFileName + len - 5, L".milk") != 0)
+			int len = wcslen(fd.cFileName);
+			if (len < 5 || _wcsicmp(fd.cFileName + len - 5, L".milk") != 0)
 				bSkip = true;					
 
             // if it is .milk, make sure we know how to run its pixel shaders -
@@ -4956,7 +4962,7 @@ void CPlugin::GenWarpPShaderText(char *szShaderText, float decay, bool bWrap)
 {
     // find the pixel shader body and replace it with custom code.
 
-    lstrcpy(szShaderText, m_szDefaultWarpPShaderText);
+    strcpy(szShaderText, m_szDefaultWarpPShaderText);
     char LF = LINEFEED_CONTROL_CHAR;
     char *p = strrchr( szShaderText, '{' );
     if (!p) 
@@ -4978,7 +4984,7 @@ void CPlugin::GenCompPShaderText(char *szShaderText, float brightness, float ve_
 {
     // find the pixel shader body and replace it with custom code.
 
-    lstrcpy(szShaderText, m_szDefaultCompPShaderText);
+    strcpy(szShaderText, m_szDefaultCompPShaderText);
     char LF = LINEFEED_CONTROL_CHAR;
     char *p = strrchr( szShaderText, '{' );
     if (!p) 

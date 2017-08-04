@@ -529,7 +529,7 @@ void CState::Default(DWORD ApplyFlags)
          (ApplyFlags & STATE_WAVE)        // updates the name, but mash-ups don't.
         )
     {
-        lstrcpyW(m_szDesc, INVALID_PRESET_DESC);
+      wcscpy(m_szDesc, INVALID_PRESET_DESC);
 	    //lstrcpy(m_szSection, "n/a");
 
         m_fPresetStartTime = -1;
@@ -1305,7 +1305,7 @@ bool CState::Import(const wchar_t *szIniFile, float fTime, CState* pOldState, DW
 		    // copy get the filename (without the path)
 		    const wchar_t *p = wcsrchr(szIniFile, '\\');
 		    if (p==NULL) p = szIniFile;
-		    lstrcpyW(m_szDesc, p+1);		
+        wcscpy(m_szDesc, p+1);
 
 		    // next remove the extension
 		    RemoveExtension(m_szDesc);
@@ -1629,7 +1629,7 @@ void CState::RecompileExpressions(int flags, int bReInit)
     int n2 = 3 + MAX_CUSTOM_WAVES*3 + MAX_CUSTOM_SHAPES*2; 
 	for (int n=0; n<n2; n++)
 	{
-		char *pOrig;
+		char *pOrig = nullptr;
 		switch(n)
 		{
 		case 0: pOrig = m_szPerFrameExpr; break;
