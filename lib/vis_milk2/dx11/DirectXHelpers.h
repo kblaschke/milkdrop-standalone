@@ -29,7 +29,7 @@
 #include <string>
 #include <memory>
 
-#ifndef _d3d9TYPES_H_
+#ifdef TARGET_WINDOWS_STORE
 typedef enum _D3DPRIMITIVETYPE {
   D3DPT_POINTLIST = 1,
   D3DPT_LINELIST = 2,
