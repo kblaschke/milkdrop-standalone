@@ -267,11 +267,13 @@ IUnknown* CPluginShell::GetFont(eFontIndex idx)
 };
 char* CPluginShell::GetDriverFilename()
 {
-	/*if (m_lpDX) return m_lpDX->GetDriver(); else*/ return NULL;
+	static char fake[1] = { 0 };
+	return fake;
 };
 char* CPluginShell::GetDriverDescription()
 {
-	/*if (m_lpDX) return m_lpDX->GetDesc(); else*/ return NULL;
+	static char fake[1] = { 0 };
+	return fake;
 };
 
 int CPluginShell::InitNondx9Stuff()
