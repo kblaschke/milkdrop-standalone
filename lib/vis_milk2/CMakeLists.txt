@@ -2,6 +2,7 @@ project(vis_milk2)
 
 enable_language(C)
 enable_language(CXX)
+enable_language(ASM_NASM)
 
 cmake_minimum_required(VERSION 2.6)
 
@@ -55,6 +56,12 @@ set(SOURCES dx11/CommonStates.cpp
             vis_milk2/support.cpp
             vis_milk2/texmgr.cpp
             vis_milk2/utility.cpp)
+
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+  set(SOURCES ${SOURCES} 
+    ns-eel2/asm-nseel-x64.asm
+  )
+endif()
 
 if(CORE_SYSTEM_NAME STREQUAL windowsstore)
   add_definitions(-D_WIN32_WINNT=0x0A00 -D_WINDOWS -D_CRT_NON_CONFORMING_SWPRINTFS)

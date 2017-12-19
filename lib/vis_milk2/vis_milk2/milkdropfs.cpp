@@ -74,7 +74,9 @@ static void MungeFPCW( WORD *pwOldCW )
     if (pwOldCW) *pwOldCW = wSave;
   //  return ret;
 #else
-	_controlfp(_PC_24, _MCW_PC); // single precision
+#ifndef _WIN64
+	_controlfp(_PC_24, _MCW_PC); // single precision (not supported on x64 see MSDN)
+#endif // !_WIN64
 	_controlfp(_RC_NEAR, _MCW_RC); // round to nearest mode
 	_controlfp(_EM_ZERODIVIDE, _EM_ZERODIVIDE);  // disable divide-by-zero
 #endif

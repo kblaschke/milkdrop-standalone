@@ -262,7 +262,12 @@ static void GLUE_CALL_CODE(INT_PTR bp, INT_PTR cp)
 INT_PTR *EEL_GLUE_set_immediate(void *_p, void *newv)
 {
   char *p=(char*)_p;
-  while (*(INT_PTR *)p != ~(INT_PTR)0) p++;
+#ifdef _WIN64
+  INT_PTR scan = 0xFEFEFEFEFEFEFEFE;
+#else
+  INT_PTR scan = ~(INT_PTR)0;
+#endif
+  while (*(INT_PTR *)p != scan) p++;
   *(INT_PTR *)p = (INT_PTR)newv;
   return ((INT_PTR*)p)+1;
 }
