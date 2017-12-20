@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 2.6)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR})
 
-find_program(CMAKE_ASM_NASM_COMPILER nasm)
+find_program(CMAKE_ASM_NASM_COMPILER NAMES nasm nasmw)
 find_package(Kodi REQUIRED)
 
 include_directories(${PROJECT_SOURCE_DIR}/lib/vis_milk2
