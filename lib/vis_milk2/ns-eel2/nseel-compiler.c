@@ -683,7 +683,18 @@ static void *__newBlock(llBlock **start, int size)
   if ((int)size > LLB_DSIZE) alloc_size += size - LLB_DSIZE;
  
 #ifdef _WIN32
+#ifdef WINAPI_FAMILY && (WINAPI_FAMILY == WINAPI_FAMILY_APP)
+  DWORD ov;
+  UINT_PTR offs, eoffs;
+
+  llb = (llBlock *)VirtualAlloc(NULL, alloc_size, MEM_COMMIT, PAGE_READWRITE);
+
+  offs = ((UINT_PTR)llb)&~4095;
+  eoffs = ((UINT_PTR)llb + alloc_size + 4095)&~4095;
+  VirtualProtect((LPVOID)offs, eoffs - offs, PAGE_EXECUTE_READWRITE, &ov);
+#else
 	llb = (llBlock *)VirtualAlloc(NULL, alloc_size, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+#endif
 #else
 	llb = (llBlock *)malloc(alloc_size); // grab bigger block if absolutely necessary (heh)
 #endif
