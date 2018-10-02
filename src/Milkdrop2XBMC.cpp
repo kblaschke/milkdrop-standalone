@@ -45,6 +45,7 @@ public:
   virtual void Render() override;
   virtual bool GetPresets(std::vector<std::string>& presets) override;
   virtual int GetActivePreset() override;
+  virtual bool IsLocked() override { return g_plugin.m_bPresetLockedByUser; }
   virtual bool PrevPreset() override;
   virtual bool NextPreset() override;
   virtual bool LoadPreset(int select) override;
