@@ -1,10 +1,7 @@
+cmake_minimum_required(VERSION 3.5)
 project(vis_milk2)
 
-enable_language(C)
-enable_language(CXX)
 enable_language(ASM_NASM)
-
-cmake_minimum_required(VERSION 2.6)
 
 remove_definitions(-DNOMINMAX)
 
