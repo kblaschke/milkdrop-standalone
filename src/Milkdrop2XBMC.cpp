@@ -5,6 +5,8 @@
  *  See LICENSE.md for more information.
  */
 
+#include <kodi/addon-instance/Visualization.h>
+
 #include <windows.h>
 #include <io.h>
 #include <vector>
@@ -13,8 +15,6 @@
 #ifndef TARGET_WINDOWS
 #define TARGET_WINDOWS
 #endif
-
-#include <kodi/addon-instance/Visualization.h>
 
 CPlugin g_plugin;
 bool IsInitialized = false;
