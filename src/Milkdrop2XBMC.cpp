@@ -28,7 +28,7 @@ public:
 
   ADDON_STATUS Create() override;
   void Stop() override;
-  void AudioData(const float* audioData, int audioDataLength, float* freqData, int freqDataLength) override;
+  void AudioData(const float* audioData, size_t audioDataLength) override;
   void Render() override;
   bool GetPresets(std::vector<std::string>& presets) override;
   int GetActivePreset() override;
@@ -42,7 +42,7 @@ public:
 
 ADDON_STATUS CVisualizationMilkdrop2::Create()
 {
-  swprintf(g_plugin.m_szPluginsDirPath, L"%hs\\resources\\", Presets().c_str());
+  swprintf(g_plugin.m_szPluginsDirPath, L"%hs\\resources\\", kodi::addon::GetAddonPath().c_str());
 
   if (FALSE == g_plugin.PluginPreInitialize(0, 0))
     return ADDON_STATUS_UNKNOWN;
@@ -66,7 +66,7 @@ void CVisualizationMilkdrop2::Stop()
 
 unsigned char waves[2][576];
 
-void CVisualizationMilkdrop2::AudioData(const float* pAudioData, int iAudioDataLength, float *pFreqData, int iFreqDataLength)
+void CVisualizationMilkdrop2::AudioData(const float* pAudioData, size_t iAudioDataLength)
 {
   int ipos=0;
   while (ipos < 576)
