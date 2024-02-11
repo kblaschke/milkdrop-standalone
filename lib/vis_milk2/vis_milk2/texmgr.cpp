@@ -30,7 +30,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "texmgr.h"
 //#include "jpegstuff.h"
 //#include "evallib/compiler.h"
-#include "../ns-eel2/ns-eel.h"
+#include <ns-eel.h>
 #include "support.h"
 #include "plugin.h"
 #include "utility.h"

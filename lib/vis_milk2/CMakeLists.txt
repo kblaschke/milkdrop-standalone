@@ -3,6 +3,8 @@ project(vis_milk2)
 
 enable_language(ASM_NASM)
 
+find_package(projectM-Eval REQUIRED COMPONENTS Milkdrop)
+
 remove_definitions(-DNOMINMAX)
 
 set( SHADER_FILES dx11/DefaultVertexShader.hlsl
@@ -37,13 +39,6 @@ set(SOURCES dx11/CommonStates.cpp
             dx11/DDSTextureLoader.cpp
             dx11/WICTextureLoader.cpp
             dx11/DX11Context.cpp
-            ns-eel2/nseel-caltab.c
-            ns-eel2/nseel-cfunc.c
-            ns-eel2/nseel-compiler.c
-            ns-eel2/nseel-eval.c
-            ns-eel2/nseel-lextab.c
-            ns-eel2/nseel-ram.c
-            ns-eel2/nseel-yylex.c
             vis_milk2/dxcontext.cpp
             vis_milk2/fft.cpp
             vis_milk2/milkdropfs.cpp
@@ -54,10 +49,19 @@ set(SOURCES dx11/CommonStates.cpp
             vis_milk2/texmgr.cpp
             vis_milk2/utility.cpp)
 
+set(SOURCES_NSEEL
+    ns-eel2/nseel-caltab.c
+    ns-eel2/nseel-cfunc.c
+    ns-eel2/nseel-compiler.c
+    ns-eel2/nseel-eval.c
+    ns-eel2/nseel-lextab.c
+    ns-eel2/nseel-ram.c
+    ns-eel2/nseel-yylex.c
+    )
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-  set(SOURCES ${SOURCES} 
-    ns-eel2/asm-nseel-x64.asm
-  )
+    set(SOURCES_NSEEL ${SOURCES_NSEEL}
+        ns-eel2/asm-nseel-x64.asm
+        )
 endif()
 
 if(CORE_SYSTEM_NAME STREQUAL windowsstore)
@@ -66,3 +70,52 @@ else()
   add_definitions(-D_WIN32_WINNT=0x0600 -D_WINDOWS)
 endif()
 add_library(vis_milk2 STATIC ${SOURCES} ${SHADER_INCLUDES})
+add_library(vis_milk2_nseel2 STATIC ${SOURCES} ${SOURCES_NSEEL} ${SHADER_INCLUDES})
+
+target_include_directories(vis_milk2_nseel2
+    PUBLIC
+    ${CMAKE_SOURCE_DIR}/ns-eel2
+    )
+
+target_link_libraries(vis_milk2
+    PUBLIC
+    projectM::Eval
+    projectM::ns-eel2
+    )
+
+add_executable(Milkdrop2StandAlone WIN32 StandAlone.cpp)
+set_target_properties(Milkdrop2StandAlone PROPERTIES
+    VS_DPI_AWARE ON
+)
+target_link_libraries(Milkdrop2StandAlone
+    vis_milk2
+    d3d11
+    )
+add_executable(Milkdrop2NSEEL2 WIN32 StandAlone.cpp)
+set_target_properties(Milkdrop2NSEEL2 PROPERTIES
+    VS_DPI_AWARE ON
+    )
+target_link_libraries(Milkdrop2NSEEL2
+    vis_milk2_nseel2
+    d3d11
+    )
+
+
+
+add_executable(EvalTestNSEEL2
+    ${SOURCES_NSEEL}
+    EvalTest.cpp
+    )
+target_include_directories(EvalTestNSEEL2
+    PUBLIC
+    ${CMAKE_SOURCE_DIR}/ns-eel2
+    )
+
+add_executable(EvalTestProjectMEval
+    EvalTest.cpp
+    )
+target_link_libraries(EvalTestProjectMEval
+    PUBLIC
+    projectM::Eval
+    projectM::ns-eel2
+    )

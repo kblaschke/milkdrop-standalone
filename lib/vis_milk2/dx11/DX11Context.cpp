@@ -18,6 +18,7 @@
 *
 */
 
+#define NOMINMAX
 #include "CommonStates.h"
 #include "DirectXHelpers.h"
 #include "DDSTextureLoader.h"

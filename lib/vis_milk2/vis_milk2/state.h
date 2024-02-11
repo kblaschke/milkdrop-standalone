@@ -39,7 +39,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <DirectXMath.h>
 
 //#include "evallib/eval.h"
-#include "../ns-eel2/ns-eel.h"
+#include <ns-eel.h>
 #include "md_defines.h"
 
 // flags for CState::RecompileExpressions():
